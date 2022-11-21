@@ -56,10 +56,11 @@ function setProgress(e) {
 
 // Volume Controls --------------------------- //
 
+let lastVolume = 1;
+
 // Volume Bar
 function changeVolume(e) {
     let volume = e.offsetX / volumeRange.offsetWidth;
-    console.log(volume);
     // Rounding volume up or down
     if (volume < 0.1) {
         volume = 0;
@@ -78,8 +79,30 @@ function changeVolume(e) {
     } else if (volume === 0) {
         volumeIcon.classList.add('fa-solid', 'fa-volume-off');
     }
+    lastVolume = volume; 
 }
 
+// Mute/Unmute
+function toggleMute() {
+    volumeIcon.className = '';
+    if (video.volume) {
+        lastVolume = video.volume;
+        video.volume = 0;
+        volumeBar.style.width = 0;
+        volumeIcon.classList.add('fa-solid', 'fa-volume-xmark');
+        volumeIcon.setAttribute('title', 'Unmute');
+    } else {
+        video.volume = lastVolume;
+        volumeBar.style.width = `${lastVolume * 100}%`;
+        if (lastVolume >= 0.7) {
+            volumeIcon.classList.add('fa-solid', 'fa-volume-high');
+        } else if (lastVolume < 0.7 && lastVolume > 0) {
+            volumeIcon.classList.add('fa-solid', 'fa-volume-low');
+        } else if (lastVolume === 0) {
+            volumeIcon.classList.add('fa-solid', 'fa-volume-off');
+        }
+    }
+}
 
 // Change Playback Speed -------------------- //
 
@@ -94,4 +117,4 @@ video.addEventListener('timeupdate', updateProgress);
 video.addEventListener('canplay', updateProgress);
 progressRange.addEventListener('click', setProgress);
 volumeRange.addEventListener('click', changeVolume);
-// volumeIcon.addEventListener('click', );
+volumeIcon.addEventListener('click', toggleMute);
